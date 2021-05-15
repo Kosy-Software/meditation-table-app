@@ -27,7 +27,6 @@ const CONFIG = {
     mainAppEntry: "./src/index.ts",
     cssEntry: "./src/styles/style.scss",
     outputDir: "./dist",
-    assetsDir: "./src/assets",
     mainAppTemplate: "./src/index.html",
     devServerPort: devServerSettings.port,
     devServerHost: devServerSettings.host,
@@ -64,11 +63,6 @@ const getPlugins = (isProduction) => {
             ...basePlugins,
             new MiniCssExtractPlugin({
                 filename: "style.[contenthash].css"
-            }),
-            new CopyWebpackPlugin({
-                patterns: [
-                    { from: "./src/assets", to: "./assets" }
-                ]
             })
         ];
     }
@@ -95,8 +89,6 @@ module.exports = (env, options) => {
             https: CONFIG.devServerSsl,
             hot: true,
             publicPath: "/",
-            contentBase: resolve(CONFIG.assetsDir),
-            contentBasePublicPath: "/assets",
             host: CONFIG.devServerHost,
             port: CONFIG.devServerPort
         },
