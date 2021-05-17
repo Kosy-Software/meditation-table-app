@@ -20,7 +20,6 @@ export class YoutubePlayer {
             videoId: videoId,
             events: {
                 onReady: () => this.onPlayerReady(),
-                //onStateChange: (event) => this.onStateChanged(event),
             },
             playerVars: {
                 enablejsapi: 1,
@@ -36,10 +35,6 @@ export class YoutubePlayer {
                 start: time,
             },
         });
-    }
-
-    private onStateChanged(event: YT.OnStateChangeEvent) {
-        this.dispatch({ type: "youtube-video-state-changed", payload: { state: event.data, time: event.target.getCurrentTime() } });
     }
 
     public setVideoId(videoId: string) {
@@ -77,9 +72,7 @@ export class YoutubePlayer {
                 }
 
                 switch (newState) {
-                    case YT.PlayerState.BUFFERING:
                     case YT.PlayerState.PLAYING:
-                    case YT.PlayerState.UNSTARTED:
                     case YT.PlayerState.CUED:
                         this.player.playVideo();
                         break;
