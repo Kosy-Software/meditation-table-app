@@ -20,7 +20,7 @@ export class YoutubePlayer {
             videoId: videoId,
             events: {
                 onReady: () => this.onPlayerReady(),
-                onStateChange: (event) => this.onStateChanged(event),
+                //onStateChange: (event) => this.onStateChanged(event),
             },
             playerVars: {
                 enablejsapi: 1,
