@@ -3,12 +3,11 @@ import './styles/style.scss';
 import { AppMessage, ComponentMessage } from './lib/appMessages';
 import { AppState } from './lib/appState';
 import { render } from './views/renderState';
-import { isValidYoutubeUrl } from './lib/validation';
 import { ClientInfo } from '@kosy/kosy-app-api/types';
 import { KosyApi } from '@kosy/kosy-app-api';
 import { YoutubePlayer } from './player';
 
-module Kosy.Integration.Youtube {
+module Kosy.Integration.Meditation {
     export class App {
         private state: AppState = { youtubeUrl: 'https://www.youtube.com/embed?v=ENYYb5vIMkU', videoState: null };
         private initializer: ClientInfo;
@@ -16,10 +15,11 @@ module Kosy.Integration.Youtube {
         private player: YoutubePlayer;
         private isApiReady: boolean;
 
-        private kosyApi = new KosyApi<AppState, AppMessage>({
+        private kosyApi = new KosyApi<AppState, AppMessage, AppMessage>({
             onClientHasJoined: (client) => this.onClientHasJoined(client),
             onClientHasLeft: (clientUuid) => this.onClientHasLeft(clientUuid),
-            onReceiveMessage: (message) => this.processMessage(message),
+            onReceiveMessageAsClient: (message) => this.processMessage(message),
+            onReceiveMessageAsHost: (message) => this.processMessageAsHost(message),
             onRequestState: () => this.getState(),
             onProvideState: (newState: AppState) => this.setState(newState)
         })
@@ -70,8 +70,25 @@ module Kosy.Integration.Youtube {
 
         public onClientHasLeft(clientUuid: string) {
             if (clientUuid === this.initializer.clientUuid) {
-                this.kosyApi.stopApp();
+                if (!this.state.youtubeUrl) {
+                    this.kosyApi.stopApp();
+                } else {
+                    this.kosyApi.relayMessage({ type: 'assign-new-host' });
+                }
             }
+        }
+
+        public processMessageAsHost(message: AppMessage): AppMessage {
+            switch (message.type) {
+                case "assign-new-host":
+                    this.player.setHost();
+                    this.renderComponent();
+                    break;
+                default:
+                    return message;
+            }
+
+            return null;
         }
 
         public processMessage(message: AppMessage) {
