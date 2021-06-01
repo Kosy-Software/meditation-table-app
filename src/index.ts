@@ -16,6 +16,7 @@ module Kosy.Integration.Meditation {
         private isApiReady: boolean;
 
         private kosyApi = new KosyApi<AppState, AppMessage, AppMessage>({
+            onClientHasJoined: (clientInfo) => this.onClientHasJoined(clientInfo),
             onClientHasLeft: (clientUuid) => this.onClientHasLeft(clientUuid),
             onReceiveMessageAsClient: (message) => this.processMessage(message),
             onReceiveMessageAsHost: (message) => this.processMessageAsHost(message),
@@ -50,7 +51,7 @@ module Kosy.Integration.Meditation {
 
         private onYouTubeIframeAPIReady() {
             this.isApiReady = true;
-            this.player = new YoutubePlayer(window.origin, '', this.initializer.clientUuid == this.currentClient.clientUuid, (cm) => this.processComponentMessage(cm), this.state.time);
+            this.player = new YoutubePlayer('', this.initializer.clientUuid == this.currentClient.clientUuid, (cm) => this.processComponentMessage(cm), this.state.time);
             this.renderComponent();
         }
 
@@ -61,6 +62,9 @@ module Kosy.Integration.Meditation {
 
         public getState() {
             return this.state;
+        }
+
+        public onClientHasJoined(clientInfo: ClientInfo) {
         }
 
         public onClientHasLeft(clientUuid: string) {
@@ -76,7 +80,6 @@ module Kosy.Integration.Meditation {
         public processMessageAsHost(message: AppMessage): AppMessage {
             switch (message.type) {
                 case "assign-new-host":
-                    this.player.setHost();
                     this.renderComponent();
                     break;
                 default:

@@ -7,8 +7,6 @@ export function renderViewingState(state: ComponentState, dispatch: ((msg: Compo
     let urlParts = state.youtubeUrl.split('=');
     let videoId = urlParts[1];
 
-    console.log(videoId);
-
     if (state.player != null && state.youtubeUrl != null) {
         state.player.setVideoId(videoId);
 
