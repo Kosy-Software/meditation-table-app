@@ -63,6 +63,11 @@ const getPlugins = (isProduction) => {
             ...basePlugins,
             new MiniCssExtractPlugin({
                 filename: "style.[contenthash].css"
+            }),
+            new CopyWebpackPlugin({
+                patterns: [
+					{ from: "./icon.png", to: "icon.png" }
+                ]
             })
         ];
     }
