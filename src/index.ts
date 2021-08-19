@@ -134,7 +134,8 @@ module Kosy.Integration.Meditation {
                 time: this.state.time,
                 currentClient: this.currentClient,
                 initializer: this.initializer,
-                player: this.player, viewState: this.viewState
+                player: this.player,
+                viewState: this.viewState
             }, (message) => this.processComponentMessage(message));
         }
 
