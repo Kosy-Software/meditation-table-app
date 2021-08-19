@@ -1,7 +1,7 @@
 import './styles/style.scss';
 
 import { AppMessage, ComponentMessage } from './lib/appMessages';
-import { AppState } from './lib/appState';
+import { AppState, ViewState } from './lib/appState';
 import { render } from './views/renderState';
 import { ClientInfo } from '@kosy/kosy-app-api/types';
 import { KosyApi } from '@kosy/kosy-app-api';
@@ -13,6 +13,7 @@ module Kosy.Integration.Meditation {
         private initializer: ClientInfo;
         private currentClient: ClientInfo;
         private player: YoutubePlayer;
+        private viewState: ViewState;
 
         private kosyApi = new KosyApi<AppState, AppMessage, AppMessage>({
             onClientHasLeft: (clientUuid) => this.onClientHasLeft(clientUuid),
@@ -29,6 +30,7 @@ module Kosy.Integration.Meditation {
             this.currentClient = initialInfo.clients[initialInfo.currentClientUuid];
             this.state = initialInfo.currentAppState ?? this.state;
             this.player = new YoutubePlayer(null, this.initializer.clientUuid == this.currentClient.clientUuid, (cm) => this.processComponentMessage(cm), this.state);
+            this.viewState = initialInfo.currentClientUuid == initialInfo.initializerClientUuid ? "viewing" : "waiting";
             this.renderComponent();
 
             window.addEventListener("message", (event: MessageEvent<ComponentMessage>) => {
@@ -74,7 +76,8 @@ module Kosy.Integration.Meditation {
                     this.kosyApi.stopApp();
                     break;
                 case "receive-youtube-video-state":
-                    if (this.currentClient.clientUuid !== this.initializer.clientUuid) {
+                    if (this.currentClient.clientUuid !== this.initializer.clientUuid && (this.viewState === "viewing" || message.payload.state == YT.PlayerState.PLAYING)) {
+                        this.viewState = "viewing";
                         this.player.handleStateChange(message.payload.state, message.payload.time);
                         this.state.videoState = message.payload.state;
                         this.state.time = message.payload.time;
@@ -131,7 +134,7 @@ module Kosy.Integration.Meditation {
                 time: this.state.time,
                 currentClient: this.currentClient,
                 initializer: this.initializer,
-                player: this.player,
+                player: this.player, viewState: this.viewState
             }, (message) => this.processComponentMessage(message));
         }
 

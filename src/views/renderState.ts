@@ -1,6 +1,7 @@
 import { ComponentState } from "../lib/appState";
 import { ComponentMessage } from '../lib/appMessages';
 import { renderViewingState } from './renderViewingState';
+import { renderWaitingState } from './renderWaitingState';
 
 type Dispatch = (msg: ComponentMessage) => void;
 type RenderView = (state: ComponentState, dispatch: Dispatch) => HTMLElement;
@@ -10,10 +11,11 @@ export function render(state: ComponentState, dispatch: Dispatch): void {
     let rootNode = document.getElementById("root");
     let redrawView = state.videoState == null || state.player.videoId == null;
 
-    if (state?.youtubeUrl) {
-        renderView = renderViewingState;
+    switch (state.viewState) {
+        case "viewing": renderView = renderViewingState; break;
+        case "waiting": renderView = renderWaitingState; break;
+        default: break;
     }
-
     //Only redraw the whole view when there is a new url, not when video state is updated
     if (redrawView && renderView != null) {
         console.log("App is redrawn");
