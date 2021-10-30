@@ -27,6 +27,7 @@ const CONFIG = {
     mainAppEntry: "./src/index.ts",
     cssEntry: "./src/styles/style.scss",
     outputDir: "./dist",
+    assetsDir: "./src/assets",
     mainAppTemplate: "./src/index.html",
     devServerPort: devServerSettings.port,
     devServerHost: devServerSettings.host,
@@ -66,6 +67,7 @@ const getPlugins = (isProduction) => {
             }),
             new CopyWebpackPlugin({
                 patterns: [
+                    { from: "./src/assets", to: "./assets" },
 					{ from: "./icon.png", to: "icon.png" }
                 ]
             })
@@ -93,7 +95,10 @@ module.exports = (env, options) => {
         devServer: {
             https: CONFIG.devServerSsl,
             hot: true,
-            publicPath: "/",
+            static: {
+                directory: resolve(CONFIG.assetsDir),
+                publicPath: "/assets"
+            },
             host: CONFIG.devServerHost,
             port: CONFIG.devServerPort
         },
