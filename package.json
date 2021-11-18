@@ -7,7 +7,7 @@
         "build": "webpack --mode production"
     },
     "dependencies": {
-        "@kosy/kosy-app-api": "^0.3.11",
+        "@kosy/kosy-app-api": "^0.4.1",
         "@types/youtube": "0.0.46"
     },
     "devDependencies": {
